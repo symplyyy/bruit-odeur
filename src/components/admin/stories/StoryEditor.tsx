@@ -653,8 +653,6 @@ export function StoryEditor({ initial }: Props = {}) {
                   <ImageUploadField
                     value={payload.backgroundUrl}
                     onChange={(v) => update("backgroundUrl", v)}
-                    format={payload.format}
-                    fit={payload.backgroundFit}
                     onFitChange={(v) => update("backgroundFit", v)}
                   />
                 </MacField>
