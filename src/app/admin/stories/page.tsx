@@ -59,9 +59,9 @@ export default async function AdminStoriesPage(
       <div className="pt-4 ui-fade-in">
         <StoryEditor key={editing?.id ?? "new"} initial={initial} />
 
-        <section className="mt-10">
-          <div className="flex items-end justify-between mb-4">
-            <div>
+        <section className="mt-10 min-w-0 max-w-full">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between mb-4">
+            <div className="min-w-0">
               <h2 className="text-[15px] font-semibold tracking-tight">
                 Templates enregistrés
               </h2>

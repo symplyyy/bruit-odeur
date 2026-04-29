@@ -13,16 +13,25 @@ import {
   Link2,
   ImagePlus,
   AlertCircle,
+  Crop,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { BackgroundCropper, type BackgroundFit } from "./BackgroundCropper";
 
 export function ImageUploadField({
   value,
   onChange,
+  format = "post",
+  fit,
+  onFitChange,
 }: {
   value: string;
   onChange: (url: string) => void;
+  format?: "story" | "post" | "post-text";
+  fit?: BackgroundFit;
+  onFitChange?: (fit: BackgroundFit) => void;
 }) {
+  const [cropperOpen, setCropperOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -40,6 +49,10 @@ export function ImageUploadField({
         throw new Error(json.error ?? `Erreur ${res.status}`);
       }
       onChange(json.url);
+      if (onFitChange) {
+        onFitChange({ tx: 0, ty: 0, scale: 1 });
+        setCropperOpen(true);
+      }
     } catch (e) {
       setError(e instanceof Error ? e.message : "Upload échoué");
     } finally {
@@ -90,6 +103,16 @@ export function ImageUploadField({
               onLoad={() => setError(null)}
             />
             <div className="absolute top-2 right-2 flex gap-1">
+              {onFitChange && (
+                <IconButton
+                  tooltip="Recadrer"
+                  size="sm"
+                  onClick={() => setCropperOpen(true)}
+                  className="bg-white/90 text-[color:var(--c-text)] hover:bg-white"
+                >
+                  <Crop size={13} strokeWidth={1.75} />
+                </IconButton>
+              )}
               <IconButton
                 tooltip="Remplacer"
                 size="sm"
@@ -179,6 +202,13 @@ export function ImageUploadField({
               onChange(e.target.value);
               setError(null);
             }}
+            onBlur={(e) => {
+              const v = e.target.value.trim();
+              if (v && /^https?:\/\//i.test(v) && onFitChange) {
+                onFitChange({ tx: 0, ty: 0, scale: 1 });
+                setCropperOpen(true);
+              }
+            }}
             placeholder="ou colle une URL https://…"
             className="pl-8"
           />
@@ -198,6 +228,20 @@ export function ImageUploadField({
           <AlertCircle size={12} strokeWidth={2} className="mt-[1px] shrink-0" />
           {error}
         </p>
+      )}
+
+      {onFitChange && (
+        <BackgroundCropper
+          open={cropperOpen && !!value}
+          imageUrl={value}
+          format={format}
+          initial={fit}
+          onCancel={() => setCropperOpen(false)}
+          onConfirm={(f) => {
+            onFitChange(f);
+            setCropperOpen(false);
+          }}
+        />
       )}
     </div>
   );

@@ -363,6 +363,14 @@ export const StoryCanvas = forwardRef<HTMLDivElement, Props>(function StoryCanva
             src={payload.backgroundUrl}
             alt=""
             className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+            style={(() => {
+              const fit = (payload as { backgroundFit?: { tx: number; ty: number; scale: number } }).backgroundFit;
+              if (!fit) return undefined;
+              return {
+                transform: `translate(${fit.tx}%, ${fit.ty}%) scale(${fit.scale})`,
+                transformOrigin: "center center",
+              };
+            })()}
           />
         ) : null}
 

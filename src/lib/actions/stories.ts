@@ -17,6 +17,13 @@ const transform = z.object({
 const payloadSchema = z.object({
   format: z.enum(["story", "post", "post-text"]),
   backgroundUrl: z.string().url().or(z.literal("")),
+  backgroundFit: z
+    .object({
+      tx: z.number().min(-100).max(100),
+      ty: z.number().min(-100).max(100),
+      scale: z.number().min(1).max(6),
+    })
+    .optional(),
   backgroundColor: z
     .union([
       z.string().regex(/^#[0-9a-fA-F]{6}$/),

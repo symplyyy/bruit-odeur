@@ -21,8 +21,8 @@ export default async function AdminLayout({
   return (
     <div className="app-shell relative min-h-dvh flex">
       <AdminSidebar logoutAction={logout} />
-      <main className="relative flex-1 min-w-0">
-        <div className="px-4 md:px-8 lg:px-10 pb-20">{children}</div>
+      <main className="relative flex-1 min-w-0 overflow-x-hidden">
+        <div className="px-4 md:px-8 lg:px-10 pb-20 max-w-full">{children}</div>
       </main>
     </div>
   );

@@ -115,12 +115,15 @@ export function Segmented<T extends string>({
   options,
   size = "md",
   className,
+  fullWidth,
 }: {
   value: T;
   onChange: (v: T) => void;
   options: { value: T; label: ReactNode; icon?: ReactNode }[];
   size?: "sm" | "md";
   className?: string;
+  /** Répartit les segments sur toute la largeur (utile panneau latéral étroit). */
+  fullWidth?: boolean;
 }) {
   const h = size === "sm" ? "h-7" : "h-8";
   const text = size === "sm" ? "text-[11.5px]" : "text-[12.5px]";
@@ -128,6 +131,7 @@ export function Segmented<T extends string>({
     <div
       className={cn(
         "inline-flex items-center p-[2px] rounded-[7px] bg-[color:var(--c-surface-3)]",
+        fullWidth && "w-full",
         h,
         className,
       )}
@@ -143,7 +147,8 @@ export function Segmented<T extends string>({
             aria-selected={active}
             onClick={() => onChange(opt.value)}
             className={cn(
-              "inline-flex items-center justify-center gap-1.5 px-3 h-full rounded-[5px] font-medium transition-all ui-focus",
+              "inline-flex items-center justify-center gap-1 px-2 sm:gap-1.5 sm:px-3 h-full rounded-[5px] font-medium transition-all ui-focus min-w-0",
+              fullWidth && "flex-1",
               text,
               active
                 ? "bg-[color:var(--c-surface)] text-[color:var(--c-text)] shadow-[0_1px_2px_rgba(0,0,0,0.18)] border border-[color:var(--c-border)]"
@@ -151,7 +156,7 @@ export function Segmented<T extends string>({
             )}
           >
             {opt.icon}
-            <span>{opt.label}</span>
+            <span className={cn(fullWidth && "truncate")}>{opt.label}</span>
           </button>
         );
       })}
