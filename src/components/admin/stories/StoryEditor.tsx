@@ -211,6 +211,7 @@ type Toast = { id: number; tone: "success" | "error"; text: string };
 function normalizePayload(p: StoryPayload): StoryPayload {
   const base: StoryPayload = {
     ...p,
+    description: p.description ?? "",
     triangleHeight: TRIANGLE_HEIGHT,
     triangleDir: TRIANGLE_DIR,
     logoTheme: p.logoTheme ?? "default",
@@ -633,6 +634,21 @@ export function StoryEditor({ initial }: Props = {}) {
               </div>
             ) : inspectorTab === "design" ? (
               <div className="p-4 space-y-5">
+                {(payload.format === "post" ||
+                  payload.format === "post-text") && (
+                  <MacField
+                    label="Description"
+                    hint="Texte interne (rédaction) — enregistré avec le template, absent de l’export PNG."
+                  >
+                    <textarea
+                      className="ui-input"
+                      rows={4}
+                      value={payload.description ?? ""}
+                      onChange={(e) => update("description", e.target.value)}
+                      placeholder="Contexte, consignes, usage prévu sur les réseaux…"
+                    />
+                  </MacField>
+                )}
                 <MacField label="Image de fond">
                   <ImageUploadField
                     value={payload.backgroundUrl}

@@ -47,6 +47,8 @@ const payloadSchema = z.object({
   darkGradient: z.boolean(),
   triangleHeight: z.number().min(0).max(0.5),
   triangleDir: z.enum(["left", "right"]),
+  /** Note interne Studio — sauvegardée avec le template, jamais rendue sur le canvas / export PNG. */
+  description: z.string().max(1200).optional(),
   // Format "post-text" : deuxième slide d'un post, texte long avec mots en gras
   // via marquage `**mot**`. Logo centré en pied de slide.
   paragraph1: z.string().max(800).optional(),
