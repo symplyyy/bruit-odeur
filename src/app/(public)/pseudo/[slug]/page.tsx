@@ -13,9 +13,14 @@ export default async function PseudoPage(props: PageProps<"/pseudo/[slug]">) {
 
   if (!data) {
     return (
-      <section className="relative overflow-hidden">
-        <Spotlight className="-top-60 -right-40" size={1000} />
-        <div className="relative mx-auto max-w-3xl px-5 md:px-10 pt-16 md:pt-24 pb-20">
+      <section className="relative">
+        <Spotlight className="fixed -top-60 -right-40 pointer-events-none" size={1000} />
+        <Spotlight
+          variant="red-soft"
+          className="fixed -bottom-60 -left-40 pointer-events-none"
+          size={800}
+        />
+        <div className="relative mx-auto max-w-3xl px-5 md:px-10 pt-16 md:pt-24 pb-20 min-h-[calc(100dvh-140px)] flex flex-col justify-center">
           <Badge tone="red" size="lg">
             Profil
           </Badge>
@@ -43,11 +48,18 @@ export default async function PseudoPage(props: PageProps<"/pseudo/[slug]">) {
   const totalVotes = data.topVotes + data.hotVotes;
 
   return (
-    <section className="relative overflow-hidden">
-      <Spotlight className="-top-60 -right-40" size={1000} />
-      <Spotlight variant="red-soft" className="-bottom-60 -left-40" size={800} />
+    <section className="relative">
+      <Spotlight
+        className="fixed -top-60 -right-40 pointer-events-none"
+        size={1000}
+      />
+      <Spotlight
+        variant="red-soft"
+        className="fixed -bottom-60 -left-40 pointer-events-none"
+        size={800}
+      />
 
-      <div className="relative mx-auto max-w-4xl px-5 md:px-10 pt-12 md:pt-20 pb-20">
+      <div className="relative mx-auto max-w-4xl px-5 md:px-10 pt-12 md:pt-20 pb-20 min-h-[calc(100dvh-140px)]">
         <Badge tone="red" size="lg">
           Profil
         </Badge>
