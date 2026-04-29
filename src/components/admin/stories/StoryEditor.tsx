@@ -38,6 +38,7 @@ import {
   Check,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { exportStage } from "@/lib/story-export";
 
 /* ------------------------------------------------------------------ */
 /*  Constants                                                          */
@@ -407,26 +408,21 @@ export function StoryEditor({ initial }: Props = {}) {
   const onExport = async () => {
     const node = stageRef.current;
     if (!node) return;
+    setSelected(null);
+    // Laisse React peindre la déselection avant la capture
+    await new Promise((r) => requestAnimationFrame(() => r(null)));
     try {
-      const html2canvas = (await import("html2canvas")).default;
-      const prev = node.style.transform;
-      node.style.transform = "scale(1)";
-      const canvas = await html2canvas(node, {
-        backgroundColor: null,
-        useCORS: true,
-        scale: 2,
-        width: node.offsetWidth,
-        height: node.offsetHeight,
-        windowWidth: node.offsetWidth,
-        windowHeight: node.offsetHeight,
-      });
-      const a = document.createElement("a");
-      a.download = `${(name || "post").toLowerCase().replace(/\s+/g, "-")}.png`;
-      a.href = canvas.toDataURL("image/png");
-      a.click();
-      node.style.transform = prev;
+      await exportStage(
+        node,
+        node.offsetWidth,
+        node.offsetHeight,
+        `${(name || "post").toLowerCase().replace(/\s+/g, "-")}.png`,
+        { pixelRatio: 2 },
+      );
       toast("Export PNG généré");
-    } catch {
+    } catch (err) {
+      const e = err as Error;
+      console.error("[story-export]", e?.message, e?.stack, err);
       toast("Erreur d’export", "error");
     }
   };

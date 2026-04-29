@@ -10,6 +10,7 @@ import {
 } from "@/components/admin/mac/primitives";
 import { Download, Sparkles } from "lucide-react";
 import { logoUrl } from "@/lib/logo-variants";
+import { exportStage } from "@/lib/story-export";
 
 type HotTakeData = {
   id: string;
@@ -141,24 +142,13 @@ export function HotTakeStoryStudio({ hot }: { hot: HotTakeData }) {
     if (!node) return;
     setPending(true);
     try {
-      const html2canvas = (await import("html2canvas")).default;
-      const prev = node.style.transform;
-      node.style.transform = "scale(1)";
-      const canvas = await html2canvas(node, {
-        backgroundColor: null,
-        useCORS: true,
-        scale: 1,
-        width: STAGE_W,
-        height: STAGE_H,
-        windowWidth: STAGE_W,
-        windowHeight: STAGE_H,
-      });
-      const a = document.createElement("a");
       const slug = mode === "question" ? "question" : "resultats";
-      a.download = `hot-take-${slug}-${hot.id.slice(0, 6)}.png`;
-      a.href = canvas.toDataURL("image/png");
-      a.click();
-      node.style.transform = prev;
+      await exportStage(
+        node,
+        STAGE_W,
+        STAGE_H,
+        `hot-take-${slug}-${hot.id.slice(0, 6)}.png`,
+      );
     } finally {
       setPending(false);
     }

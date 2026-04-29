@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Card, MacButton, MacField, MacInput, Segmented } from "@/components/admin/mac/primitives";
 import { Download, Sparkles } from "lucide-react";
 import { LOGO_THEMES, logoUrl, type LogoTheme } from "@/lib/logo-variants";
+import { exportStage } from "@/lib/story-export";
 
 type PodiumSortie = {
   id: string;
@@ -56,23 +57,12 @@ export function TopPodiumStudio({ top }: Props) {
     if (!node) return;
     setPending(true);
     try {
-      const html2canvas = (await import("html2canvas")).default;
-      const prev = node.style.transform;
-      node.style.transform = "scale(1)";
-      const canvas = await html2canvas(node, {
-        backgroundColor: null,
-        useCORS: true,
-        scale: 1,
-        width: STAGE_W,
-        height: STAGE_H,
-        windowWidth: STAGE_W,
-        windowHeight: STAGE_H,
-      });
-      const a = document.createElement("a");
-      a.download = `podium-s${top.weekNumber}-${top.year}.png`;
-      a.href = canvas.toDataURL("image/png");
-      a.click();
-      node.style.transform = prev;
+      await exportStage(
+        node,
+        STAGE_W,
+        STAGE_H,
+        `podium-s${top.weekNumber}-${top.year}.png`,
+      );
     } finally {
       setPending(false);
     }
