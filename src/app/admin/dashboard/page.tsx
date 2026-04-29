@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { MacToolbar } from "@/components/admin/mac/Toolbar";
 import {
   Card,
@@ -8,6 +9,7 @@ import {
 } from "@/components/admin/mac/primitives";
 import { EngagementChart } from "@/components/admin/charts/EngagementChart";
 import { getAdminDashboard, getVotersStats } from "@/lib/admin-queries";
+import { adminLogout } from "@/lib/auth";
 import {
   Plus,
   Flame,
@@ -15,6 +17,7 @@ import {
   ArrowUpRight,
   TrendingUp,
   TrendingDown,
+  LogOut,
 } from "lucide-react";
 
 export const metadata = { title: "Vue d’ensemble" };
@@ -41,6 +44,12 @@ export default async function AdminDashboardPage() {
     getVotersStats(),
   ]);
 
+  async function logout() {
+    "use server";
+    await adminLogout();
+    redirect("/login");
+  }
+
   const totalSeries = data.series.map((p) => p.total);
   const topSeries = data.series.map((p) => p.top);
   const hotSeries = data.series.map((p) => p.hot);
@@ -65,6 +74,14 @@ export default async function AdminDashboardPage() {
                 Nouveau Hot Take
               </MacButton>
             </Link>
+            <form action={logout}>
+              <MacButton
+                type="submit"
+                icon={<LogOut size={13} strokeWidth={1.75} />}
+              >
+                Déconnexion
+              </MacButton>
+            </form>
           </>
         }
       />

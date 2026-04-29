@@ -35,7 +35,7 @@ export function Masthead() {
           <span className="hidden sm:inline">
             Paris · Banlieue · Rap français
           </span>
-          <span>
+          <span className="flex items-center gap-3">
             {hydrated && pseudo ? (
               <Link
                 href={`/pseudo/${encodeURIComponent(pseudo)}`}
@@ -46,6 +46,25 @@ export function Masthead() {
             ) : (
               <span className="text-ink/50">Lecteur anonyme</span>
             )}
+            <Link
+              href="/login"
+              aria-label="Accès admin"
+              title="Accès admin"
+              className="grid place-items-center w-7 h-7 border border-ink/30 text-ink/50 hover:text-brand-red hover:border-brand-red transition-colors"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.2"
+                strokeLinecap="square"
+                strokeLinejoin="miter"
+                className="w-3.5 h-3.5"
+              >
+                <rect x="4" y="11" width="16" height="10" />
+                <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+              </svg>
+            </Link>
           </span>
         </div>
 

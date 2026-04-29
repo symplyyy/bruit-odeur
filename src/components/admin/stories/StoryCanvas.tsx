@@ -362,7 +362,6 @@ export const StoryCanvas = forwardRef<HTMLDivElement, Props>(function StoryCanva
           <img
             src={payload.backgroundUrl}
             alt=""
-            crossOrigin="anonymous"
             className="absolute inset-0 w-full h-full object-cover pointer-events-none"
           />
         ) : null}

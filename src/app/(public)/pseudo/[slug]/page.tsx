@@ -1,8 +1,8 @@
 import Link from "next/link";
 import Image from "next/image";
-import { notFound } from "next/navigation";
 import { Badge } from "@/components/ui/Badge";
 import { Spotlight } from "@/components/ui/Spotlight";
+import { ChangePseudoButton } from "@/components/ui/ChangePseudoButton";
 import { getPseudoProfile } from "@/lib/queries";
 import { slugify } from "@/lib/utils";
 
@@ -10,7 +10,35 @@ export default async function PseudoPage(props: PageProps<"/pseudo/[slug]">) {
   const raw = await props.params;
   const slug = slugify(decodeURIComponent(raw.slug));
   const data = await getPseudoProfile(slug);
-  if (!data) notFound();
+
+  if (!data) {
+    return (
+      <section className="relative overflow-hidden">
+        <Spotlight className="-top-60 -right-40" size={1000} />
+        <div className="relative mx-auto max-w-3xl px-5 md:px-10 pt-16 md:pt-24 pb-20">
+          <Badge tone="red" size="lg">
+            Profil
+          </Badge>
+          <h1 className="font-display uppercase text-[44px] md:text-[88px] mt-5 leading-[0.86] tracking-[-0.04em] text-chalk break-all">
+            @{decodeURIComponent(raw.slug)}
+          </h1>
+          <p className="mt-6 text-fade max-w-xl">
+            Ce pseudo n&apos;a pas encore voté. Vote sur un Top ou un Hot Take
+            pour activer ton profil — ou choisis-en un autre.
+          </p>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Link
+              href="/"
+              className="inline-flex items-center h-10 px-4 bg-brand-red text-white text-[11px] uppercase tracking-[0.25em] hover:bg-ink transition-colors"
+            >
+              Aller voter
+            </Link>
+            <ChangePseudoButton slug={slug} />
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   const totalVotes = data.topVotes + data.hotVotes;
 
@@ -34,6 +62,10 @@ export default async function PseudoPage(props: PageProps<"/pseudo/[slug]">) {
             year: "numeric",
           })}
         </p>
+
+        <div className="mt-6">
+          <ChangePseudoButton slug={slug} />
+        </div>
 
         <div className="mt-12 grid grid-cols-3 gap-3 md:gap-4">
           <Stat label="Top" value={data.topVotes} />

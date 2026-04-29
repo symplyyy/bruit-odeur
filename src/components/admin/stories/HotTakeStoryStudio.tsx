@@ -400,7 +400,6 @@ function QuestionCanvas({
           <img
             src={backgroundUrl}
             alt=""
-            crossOrigin="anonymous"
             style={{
               position: "absolute",
               inset: 0,

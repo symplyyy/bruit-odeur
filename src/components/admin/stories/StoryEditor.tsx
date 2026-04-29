@@ -9,6 +9,7 @@ import {
 } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { StoryCanvas, type ElementKey } from "./StoryCanvas";
+import { ImageUploadField } from "./ImageUploadField";
 import {
   saveStoryTemplate,
   updateStoryTemplate,
@@ -47,9 +48,9 @@ const IDENTITY = { scaleX: 1, scaleY: 1, rotation: 0 };
 /* Positions = centre de l'élément. */
 const DEFAULT_TRANSFORMS = {
   logo: { x: 0.13, y: 0.08, ...IDENTITY },
-  tag: { x: 0.27, y: 0.46, ...IDENTITY },
-  title: { x: 0.5, y: 0.58, ...IDENTITY },
-  genre: { x: 0.5, y: 0.7, ...IDENTITY },
+  tag: { x: 0.27, y: 0.51, ...IDENTITY },
+  title: { x: 0.5, y: 0.63, ...IDENTITY },
+  genre: { x: 0.5, y: 0.75, ...IDENTITY },
 };
 
 const CATEGORY_COLORS = {
@@ -109,7 +110,7 @@ const STORY_PRESETS: { name: string; payload: StoryPayload }[] = [
       triangleDir: TRIANGLE_DIR,
       transforms: {
         ...DEFAULT_TRANSFORMS,
-        tag: { x: 0.27, y: 0.46, scaleX: 1, scaleY: 1, rotation: -4 },
+        tag: { x: 0.27, y: 0.51, scaleX: 1, scaleY: 1, rotation: -4 },
       },
     },
   },
@@ -141,9 +142,9 @@ const POST_PRESETS: { name: string; payload: StoryPayload }[] = (
     triangleDir: TRIANGLE_DIR,
     transforms: {
       logo: { x: 0.12, y: 0.1, scaleX: 1, scaleY: 1, rotation: 0 },
-      tag: { x: 0.25, y: 0.5, scaleX: 1, scaleY: 1, rotation: -4 },
-      title: { x: 0.5, y: 0.64, scaleX: 1, scaleY: 1, rotation: 0 },
-      genre: { x: 0.5, y: 0.77, scaleX: 1, scaleY: 1, rotation: 0 },
+      tag: { x: 0.25, y: 0.55, scaleX: 1, scaleY: 1, rotation: -4 },
+      title: { x: 0.5, y: 0.69, scaleX: 1, scaleY: 1, rotation: 0 },
+      genre: { x: 0.5, y: 0.82, scaleX: 1, scaleY: 1, rotation: 0 },
     },
   },
 }));
@@ -180,12 +181,12 @@ const POST_TEXT_PRESETS: { name: string; payload: StoryPayload }[] = (
       "Lorem **ipsum** dolor sit amet **consectetur**. Malesuada tincidunt fames eget **tempus blandit** proin tortor.",
     transforms: {
       logo: { x: 0.5, y: 0.92, scaleX: 1, scaleY: 1, rotation: 0 },
-      tag: { x: 0.25, y: 0.5, scaleX: 1, scaleY: 1, rotation: 0 },
-      title: { x: 0.5, y: 0.64, scaleX: 1, scaleY: 1, rotation: 0 },
-      genre: { x: 0.5, y: 0.77, scaleX: 1, scaleY: 1, rotation: 0 },
+      tag: { x: 0.25, y: 0.55, scaleX: 1, scaleY: 1, rotation: 0 },
+      title: { x: 0.5, y: 0.69, scaleX: 1, scaleY: 1, rotation: 0 },
+      genre: { x: 0.5, y: 0.82, scaleX: 1, scaleY: 1, rotation: 0 },
       paragraph1: { x: 0.5, y: 0.26, scaleX: 1, scaleY: 1, rotation: 0 },
       paragraph2: { x: 0.5, y: 0.515, scaleX: 1, scaleY: 1, rotation: 0 },
-      accent: { x: 0.139, y: 0.618, scaleX: 1, scaleY: 1, rotation: 0 },
+      accent: { x: 0.139, y: 0.668, scaleX: 1, scaleY: 1, rotation: 0 },
     },
   },
 }));
@@ -636,22 +637,11 @@ export function StoryEditor({ initial }: Props = {}) {
               </div>
             ) : inspectorTab === "design" ? (
               <div className="p-4 space-y-5">
-                <MacField label="Image de fond (URL)">
-                  <div className="flex gap-1.5">
-                    <MacInput
-                      type="url"
-                      value={payload.backgroundUrl}
-                      onChange={(e) => update("backgroundUrl", e.target.value)}
-                      placeholder="https://…"
-                    />
-                    <IconButton
-                      tooltip="Vider"
-                      size="sm"
-                      onClick={() => update("backgroundUrl", "")}
-                    >
-                      <ImageIcon size={13} strokeWidth={1.75} />
-                    </IconButton>
-                  </div>
+                <MacField label="Image de fond">
+                  <ImageUploadField
+                    value={payload.backgroundUrl}
+                    onChange={(v) => update("backgroundUrl", v)}
+                  />
                 </MacField>
 
                 <MacField
