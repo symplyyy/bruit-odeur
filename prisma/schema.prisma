@@ -1,0 +1,162 @@
+// Prisma schema — Le Bruit & L'Odeur
+// https://www.prisma.io/docs
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ---------- Identité publique légère ----------
+
+/// Pseudo saisi côté client (localStorage). Unique, sert d'identifiant de votant.
+model Pseudo {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  slug        String   @unique
+  createdAt   DateTime @default(now())
+
+  topVotes    TopVote[]
+  hotVotes    HotTakeVote[]
+
+  @@index([createdAt])
+}
+
+// ---------- Top de la semaine ----------
+
+enum TopStatus {
+  DRAFT
+  OPEN
+  CLOSED
+}
+
+model Top {
+  id          String    @id @default(cuid())
+  weekNumber  Int
+  year        Int
+  title       String
+  status      TopStatus @default(DRAFT)
+  openAt      DateTime
+  closeAt     DateTime
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  sorties     Sortie[]
+  votes       TopVote[]
+
+  @@unique([year, weekNumber])
+  @@index([status])
+}
+
+enum SortieCategory {
+  SON
+  ALBUM
+  CLIP
+  SPORT
+  AUTRE
+}
+
+/// Une "sortie" = son/album/clip rap proposé au vote.
+model Sortie {
+  id          String          @id @default(cuid())
+  topId       String
+  artiste     String
+  titre       String
+  pochetteUrl String
+  embedUrl    String?
+  category    SortieCategory  @default(SON)
+  order       Int             @default(0)
+
+  top         Top             @relation(fields: [topId], references: [id], onDelete: Cascade)
+  votes       TopVote[]
+
+  @@index([topId])
+}
+
+/// Un pseudo vote une seule fois par Top.
+model TopVote {
+  id          String   @id @default(cuid())
+  topId       String
+  sortieId    String
+  pseudoId    String
+  createdAt   DateTime @default(now())
+
+  top         Top      @relation(fields: [topId], references: [id], onDelete: Cascade)
+  sortie      Sortie   @relation(fields: [sortieId], references: [id], onDelete: Cascade)
+  pseudo      Pseudo   @relation(fields: [pseudoId], references: [id], onDelete: Cascade)
+
+  @@unique([topId, pseudoId])
+  @@index([sortieId])
+}
+
+// ---------- Hot Take ----------
+
+enum HotTakeStatus {
+  DRAFT
+  OPEN
+  CLOSED
+}
+
+enum HotTakeSide {
+  FIRE
+  FROID
+}
+
+model HotTake {
+  id            String         @id @default(cuid())
+  statement     String
+  backgroundUrl String?
+  status        HotTakeStatus  @default(DRAFT)
+  publishAt     DateTime
+  closeAt       DateTime?
+  /// Duel par défaut : Chaud (FIRE) / Froid (FROID).
+  /// Si les deux labels sont renseignés, l'UI passe en mode versus A vs B
+  /// (A = FIRE, B = FROID).
+  optionALabel  String?
+  optionBLabel  String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  votes         HotTakeVote[]
+
+  @@index([status, publishAt])
+}
+
+model HotTakeVote {
+  id          String      @id @default(cuid())
+  hotTakeId   String
+  pseudoId    String
+  side        HotTakeSide
+  createdAt   DateTime    @default(now())
+
+  hotTake     HotTake     @relation(fields: [hotTakeId], references: [id], onDelete: Cascade)
+  pseudo      Pseudo      @relation(fields: [pseudoId], references: [id], onDelete: Cascade)
+
+  @@unique([hotTakeId, pseudoId])
+  @@index([side])
+}
+
+// ---------- Éditeur stories ----------
+
+model StoryTemplate {
+  id          String   @id @default(cuid())
+  name        String
+  payload     Json
+  thumbUrl    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// ---------- Admin ----------
+
+model AdminUser {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String?
+  createdAt    DateTime @default(now())
+}

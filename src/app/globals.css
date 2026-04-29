@@ -1,26 +1,667 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* ========================================================================
+   Design system — Le Bruit & L'Odeur (site public)
+   DA: dark, brut, minimaliste, impactant. Accent rouge brand.
+   Le back-office est isolé via `.app-shell` dans src/app/admin/admin.css.
+======================================================================== */
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* Brand colors (charte officielle) */
+  --color-brand-red: #e52321;
+  --color-brand-red-hot: #ff3b37;
+  --color-brand-black: #050505;
+  --color-brand-white: #ffffff;
+  --color-brand-blue: #2088ff;
+
+  /* Surfaces sombres — échelle */
+  --color-ink: #050505;
+  --color-void: #000000;
+  --color-soot: #0b0b0c;
+  --color-char: #111114;
+  --color-smoke: #17171b;
+  --color-ash: #22232a;
+  --color-steel: #2d2f38;
+
+  /* Texte sur fond sombre */
+  --color-chalk: #f5f5f5;
+  --color-mist: #c8c9ce;
+  --color-fade: #8a8b91;
+  --color-dim: #55565d;
+
+  /* Legacy tokens conservés (utilisés ailleurs, ex: stories/print) */
+  --color-paper: #e8e1d1;
+  --color-paper-dark: #d4cbb6;
+  --color-kraft: #8a7a5f;
+  --color-brand-stone: #d4d0c8;
+
+  --color-background: var(--color-ink);
+  --color-foreground: var(--color-chalk);
+
+  --font-display: var(--font-kabel);
+  --font-sans: var(--font-capitana);
+
+  --ease-sharp: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-pop: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Pas d'arrondis par défaut (règle DA) */
+* {
+  border-radius: 0;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+/* ------------------------------------------------------------------------
+   TOKENS SÉMANTIQUES (site public) — basculent via .dark / .light
+   Les variables "canoniques" (--color-ink, --color-chalk…) sont redéfinies
+   ici, ce qui fait automatiquement flipper tous les utilitaires Tailwind
+   (bg-ink, text-chalk, text-mist, border-ash, etc.).
+------------------------------------------------------------------------ */
+
+html.dark {
+  color-scheme: dark;
+  /* surfaces sombres */
+  --color-ink: #050505;
+  --color-void: #000000;
+  --color-soot: #0b0b0c;
+  --color-char: #111114;
+  --color-smoke: #17171b;
+  --color-ash: #22232a;
+  --color-steel: #2d2f38;
+
+  /* texte sur fond sombre */
+  --color-chalk: #f5f5f5;
+  --color-mist: #c8c9ce;
+  --color-fade: #8a8b91;
+  --color-dim: #55565d;
+
+  /* tokens sémantiques supplémentaires (hairlines, surfaces custom) */
+  --line-subtle: rgba(255, 255, 255, 0.08);
+  --line-strong: rgba(255, 255, 255, 0.16);
+  --surface-glass: rgba(11, 11, 12, 0.55);
+  --surface-raise: rgba(17, 17, 20, 0.6);
+  --surface-lift: rgba(255, 255, 255, 0.04);
+  --surface-lift-2: rgba(255, 255, 255, 0.05);
+  --grid-line: rgba(255, 255, 255, 0.04);
+  --grid-line-fine: rgba(255, 255, 255, 0.035);
+  --noise-blend: screen;
+  --halo-chalk: rgba(255, 255, 255, 0.14);
+  --halo-chalk-edge: rgba(255, 255, 255, 0.03);
+}
+
+html.light {
+  color-scheme: light;
+  /* surfaces claires (papier brut, pas beige — blanc cassé minéral) */
+  --color-ink: #f5f5f3;
+  --color-void: #ffffff;
+  --color-soot: #ececea;
+  --color-char: #e4e4e1;
+  --color-smoke: #d8d8d4;
+  --color-ash: #c4c4bf;
+  --color-steel: #9a9a94;
+
+  /* texte sur fond clair */
+  --color-chalk: #0a0a0a;
+  --color-mist: #2d2d2d;
+  --color-fade: #6b6b6b;
+  --color-dim: #8a8a8a;
+
+  --line-subtle: rgba(10, 10, 10, 0.1);
+  --line-strong: rgba(10, 10, 10, 0.2);
+  --surface-glass: rgba(255, 255, 255, 0.7);
+  --surface-raise: rgba(255, 255, 255, 0.85);
+  --surface-lift: rgba(10, 10, 10, 0.04);
+  --surface-lift-2: rgba(10, 10, 10, 0.05);
+  --grid-line: rgba(10, 10, 10, 0.05);
+  --grid-line-fine: rgba(10, 10, 10, 0.04);
+  --noise-blend: multiply;
+  --halo-chalk: rgba(10, 10, 10, 0.1);
+  --halo-chalk-edge: rgba(10, 10, 10, 0.02);
+}
+
+html {
+  background: var(--color-ink);
+  /* overflow-x: clip — évite le scroll horizontal sans casser les sticky */
+  overflow-x: clip;
+  transition:
+    background-color 200ms var(--ease-smooth),
+    color 200ms var(--ease-smooth);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-ink);
+  color: var(--color-chalk);
+  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: clip;
+  transition:
+    background-color 200ms var(--ease-smooth),
+    color 200ms var(--ease-smooth);
+}
+
+/* Kabel — titres percutants, toujours en majuscules (charte typographique) */
+.font-display {
+  font-family: var(--font-display), "Arial Black", sans-serif;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -0.015em;
+  line-height: 0.9;
+}
+.font-display-bold {
+  font-family: var(--font-display), "Arial Black", sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  line-height: 0.95;
+}
+
+/* Sélection : laisser le rendu natif du navigateur. */
+
+/* ========================================================================
+   BACKDROPS ATMOSPHÉRIQUES — grid, spotlight, aurora, grain
+======================================================================== */
+
+/* Grille technique subtile */
+.bg-grid {
+  background-image:
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+  background-size: 64px 64px;
+}
+.bg-grid-fine {
+  background-image:
+    linear-gradient(to right, var(--grid-line-fine) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line-fine) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+.bg-grid-fade {
+  mask-image: radial-gradient(
+    ellipse at center,
+    rgba(0, 0, 0, 1) 0%,
+    rgba(0, 0, 0, 0) 75%
+  );
+  -webkit-mask-image: radial-gradient(
+    ellipse at center,
+    rgba(0, 0, 0, 1) 0%,
+    rgba(0, 0, 0, 0) 75%
+  );
+}
+
+/* Spotlight — halo radial d'accent (rouge) */
+.spotlight {
+  position: absolute;
+  pointer-events: none;
+  width: 1200px;
+  height: 1200px;
+  border-radius: 9999px;
+  background: radial-gradient(
+    closest-side,
+    rgba(229, 35, 33, 0.28),
+    rgba(229, 35, 33, 0.08) 45%,
+    transparent 75%
+  );
+  filter: blur(24px);
+  opacity: 0.9;
+  mix-blend-mode: screen;
+}
+.spotlight-soft {
+  background: radial-gradient(
+    closest-side,
+    rgba(229, 35, 33, 0.16),
+    rgba(229, 35, 33, 0.04) 50%,
+    transparent 78%
+  );
+}
+.spotlight-chalk {
+  background: radial-gradient(
+    closest-side,
+    var(--halo-chalk),
+    var(--halo-chalk-edge) 50%,
+    transparent 78%
+  );
+}
+
+/* Aurora — dégradé diagonal animé */
+@keyframes aurora {
+  0% {
+    transform: translate3d(-20%, -10%, 0) rotate(0deg);
+  }
+  50% {
+    transform: translate3d(10%, 5%, 0) rotate(6deg);
+  }
+  100% {
+    transform: translate3d(-20%, -10%, 0) rotate(0deg);
+  }
+}
+.aurora {
+  position: absolute;
+  pointer-events: none;
+  inset: -20%;
+  background:
+    radial-gradient(
+      60% 40% at 20% 30%,
+      rgba(229, 35, 33, 0.35) 0%,
+      transparent 60%
+    ),
+    radial-gradient(
+      50% 35% at 80% 70%,
+      rgba(32, 136, 255, 0.18) 0%,
+      transparent 65%
+    ),
+    radial-gradient(
+      40% 30% at 60% 20%,
+      rgba(255, 59, 55, 0.2) 0%,
+      transparent 60%
+    );
+  filter: blur(60px);
+  animation: aurora 22s var(--ease-smooth) infinite;
+  mix-blend-mode: screen;
+  opacity: 0.7;
+}
+
+/* Grain (film/bruit) — adapte le blend mode au thème */
+.noise::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.06;
+  mix-blend-mode: var(--noise-blend);
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  background-size: 240px 240px;
+}
+
+/* Hairlines & surfaces */
+.hairline {
+  border: 1px solid var(--line-subtle);
+}
+.hairline-b {
+  border-bottom: 1px solid var(--line-subtle);
+}
+.hairline-t {
+  border-top: 1px solid var(--line-subtle);
+}
+.hairline-strong {
+  border: 1px solid var(--line-strong);
+}
+
+.surface {
+  background: linear-gradient(
+      180deg,
+      var(--surface-lift-2),
+      transparent 60%
+    ),
+    var(--surface-raise);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--line-subtle);
+}
+.surface-glass {
+  background: var(--surface-glass);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  border: 1px solid var(--line-subtle);
+}
+
+/* Lueur autour d'un élément */
+.glow-red {
+  box-shadow:
+    0 0 0 1px rgba(229, 35, 33, 0.45),
+    0 20px 60px -20px rgba(229, 35, 33, 0.5);
+}
+.glow-chalk {
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.12),
+    0 20px 50px -20px rgba(255, 255, 255, 0.08);
+}
+
+/* ========================================================================
+   TYPO & COMPOSANTS BRUTS
+======================================================================== */
+
+/* Petit label uppercase — signature éditoriale */
+.eyebrow {
+  font-family: var(--font-sans);
+  text-transform: uppercase;
+  letter-spacing: 0.28em;
+  font-size: 10px;
+  font-weight: 500;
+}
+
+/* ------------------------------------------------------------------------
+   PARALLÉLOGRAMMES — signature DA "tag" (rectangle penché -12°)
+   Le fond est porté par ::before avec skew. Le contenu reste droit.
+------------------------------------------------------------------------ */
+.chip {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  color: var(--color-mist);
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1;
+}
+.chip::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--surface-lift);
+  border: 1px solid var(--line-strong);
+  transform: skewX(-12deg);
+  z-index: -1;
+  transition:
+    background-color 0.2s var(--ease-sharp),
+    border-color 0.2s var(--ease-sharp);
+}
+.chip-red {
+  color: #ffffff;
+}
+.chip-red::before {
+  background: var(--color-brand-red);
+  border-color: var(--color-brand-red);
+  box-shadow: 0 6px 18px -6px rgba(229, 35, 33, 0.55);
+}
+.chip-blue {
+  color: #ffffff;
+}
+.chip-blue::before {
+  background: #2088ff;
+  border-color: #2088ff;
+  box-shadow: 0 6px 18px -6px rgba(32, 136, 255, 0.45);
+}
+.chip-ghost::before {
+  background: transparent;
+}
+
+/* Variante réduite — indicateurs contextuels (ex: "Ton vote" sur une pochette) */
+.chip-sm {
+  padding: 4px 10px;
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  gap: 4px;
+}
+
+/* Pulse subtil sur chip rouge "live" — remplace le ping dot */
+@keyframes chipPulse {
+  0%,
+  100% {
+    box-shadow: 0 6px 18px -6px rgba(229, 35, 33, 0.55);
+    filter: brightness(1);
+  }
+  50% {
+    box-shadow: 0 10px 26px -6px rgba(229, 35, 33, 0.9);
+    filter: brightness(1.15);
+  }
+}
+.chip-pulse::before {
+  animation: chipPulse 2.4s var(--ease-smooth) infinite;
+}
+.slant-pulse::before {
+  animation: chipPulse 2.4s var(--ease-smooth) infinite;
+}
+
+/* Tag XL — variante éditoriale penchée (pour hero / empty states) */
+.slant {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 22px;
+  color: var(--color-chalk);
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+}
+.slant::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--surface-lift-2);
+  border: 1px solid var(--line-strong);
+  transform: skewX(-12deg);
+  z-index: -1;
+}
+.slant-red {
+  color: #ffffff;
+}
+.slant-red::before {
+  background: var(--color-brand-red);
+  border-color: var(--color-brand-red);
+  box-shadow: 0 10px 28px -10px rgba(229, 35, 33, 0.6);
+}
+
+/* ------------------------------------------------------------------------
+   NAV parallélogramme — menu bas app-like
+   Le fond et la pill active sont skewés, les icônes/labels restent droits.
+------------------------------------------------------------------------ */
+.nav-paral {
+  position: relative;
+  isolation: isolate;
+}
+.nav-paral::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--surface-glass);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  border: 1px solid var(--line-strong);
+  transform: skewX(-12deg);
+  z-index: -1;
+  box-shadow: 0 24px 50px -20px rgba(0, 0, 0, 0.35);
+}
+.nav-paral-pill {
+  position: absolute;
+  inset: 4px;
+  z-index: 0;
+  pointer-events: none;
+}
+.nav-paral-pill::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--surface-lift);
+  border: 1px solid var(--line-strong);
+  transform: skewX(-12deg);
+}
+
+/* Règles éditoriales */
+.rule-under {
+  border-bottom: 1px solid var(--line-strong);
+  padding-bottom: 0.35rem;
+}
+.rule-over {
+  border-top: 1px solid var(--line-strong);
+  padding-top: 0.35rem;
+}
+
+/* Vertical text */
+.vertical-rl {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+}
+
+/* ========================================================================
+   MARQUEE — ticker horizontal
+======================================================================== */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+.animate-marquee {
+  animation: marquee 34s linear infinite;
+}
+.animate-marquee-slow {
+  animation: marquee 60s linear infinite;
+}
+
+/* ========================================================================
+   ANIMATIONS
+======================================================================== */
+
+/* Pulse rouge — card leader */
+@keyframes redGlow {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 1px rgba(229, 35, 33, 0.55),
+      0 0 0 0 rgba(229, 35, 33, 0.3);
+  }
+  50% {
+    box-shadow:
+      0 0 0 1px rgba(229, 35, 33, 0.7),
+      0 0 48px 4px rgba(229, 35, 33, 0.35);
+  }
+}
+.animate-leading {
+  animation: redGlow 2.4s ease-in-out infinite;
+}
+
+/* Kick — hot take reveal */
+@keyframes kick {
+  0% {
+    transform: translate(0, 0);
+  }
+  20% {
+    transform: translate(-4px, 2px);
+  }
+  40% {
+    transform: translate(3px, -3px);
+  }
+  60% {
+    transform: translate(-3px, 4px);
+  }
+  80% {
+    transform: translate(2px, -2px);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+.animate-kick {
+  animation: kick 0.45s ease-in-out;
+}
+
+/* Pulse accent */
+@keyframes ping-ring {
+  0% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  80% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+}
+.animate-ping-ring {
+  animation: ping-ring 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+/* Shimmer text (hover reveal) */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+.text-shimmer {
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--color-chalk) 70%, transparent) 0%,
+    var(--color-chalk) 50%,
+    color-mix(in srgb, var(--color-chalk) 70%, transparent) 100%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shimmer 3.5s linear infinite;
+}
+
+/* ========================================================================
+   SCROLLBAR discrète (dark)
+======================================================================== */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--line-subtle);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--line-strong);
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ========================================================================
+   Legacy helpers conservés (utilisés hors site public : admin, stories…)
+======================================================================== */
+.paper-grain {
+  position: relative;
+}
+.paper-grain::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.35;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.5 0'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.5'/></svg>");
+  background-size: 160px 160px;
+}
+.halftone-band {
+  height: 18px;
+  background: repeating-linear-gradient(
+    90deg,
+    #0a0a0a 0,
+    #0a0a0a 2px,
+    transparent 2px,
+    transparent 7px
+  );
+}
+.stamp {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 0.9rem;
+  border: 2px solid currentColor;
+  outline: 1px solid currentColor;
+  outline-offset: 3px;
+  font-family: var(--font-display), sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  transform: rotate(-3deg);
+}
+.stage-dark {
+  background: var(--color-ink);
+  color: var(--color-chalk);
+  position: relative;
 }
