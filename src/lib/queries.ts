@@ -168,6 +168,28 @@ export async function getOpenHotTakes(): Promise<OpenHotTake[]> {
   }
 }
 
+export async function getHotTakeById(id: string): Promise<OpenHotTake | null> {
+  try {
+    const hot = await db.hotTake.findUnique({
+      where: { id },
+      include: { votes: true },
+    });
+    if (!hot || hot.status !== "OPEN") return null;
+    return {
+      id: hot.id,
+      statement: hot.statement,
+      backgroundUrl: hot.backgroundUrl,
+      closeAt: hot.closeAt,
+      fire: hot.votes.filter((v) => v.side === "FIRE").length,
+      froid: hot.votes.filter((v) => v.side === "FROID").length,
+      optionALabel: hot.optionALabel,
+      optionBLabel: hot.optionBLabel,
+    };
+  } catch {
+    return null;
+  }
+}
+
 export async function getOpenTop(): Promise<OpenTop | null> {
   try {
     const top = await db.top.findFirst({
