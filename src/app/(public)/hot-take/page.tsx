@@ -2,15 +2,15 @@ import Link from "next/link";
 import { HotTakeCard } from "@/components/games/HotTake/HotTakeCard";
 import { Badge } from "@/components/ui/Badge";
 import { Spotlight } from "@/components/ui/Spotlight";
-import { getOpenHotTake } from "@/lib/queries";
+import { getOpenHotTakes } from "@/lib/queries";
 
 export const metadata = { title: "Hot Take" };
 export const dynamic = "force-dynamic";
 
 export default async function HotTakePage() {
-  const hot = await getOpenHotTake();
+  const hotTakes = await getOpenHotTakes();
 
-  if (!hot) {
+  if (hotTakes.length === 0) {
     return (
       <section className="relative overflow-hidden">
         <Spotlight className="-top-40 -left-20" size={800} />
@@ -32,14 +32,21 @@ export default async function HotTakePage() {
   }
 
   return (
-    <HotTakeCard
-      hotTakeId={hot.id}
-      statement={hot.statement}
-      backgroundUrl={hot.backgroundUrl}
-      initialFire={hot.fire}
-      initialFroid={hot.froid}
-      optionALabel={hot.optionALabel}
-      optionBLabel={hot.optionBLabel}
-    />
+    <>
+      {hotTakes.map((hot, i) => (
+        <HotTakeCard
+          key={hot.id}
+          hotTakeId={hot.id}
+          statement={hot.statement}
+          backgroundUrl={hot.backgroundUrl}
+          initialFire={hot.fire}
+          initialFroid={hot.froid}
+          optionALabel={hot.optionALabel}
+          optionBLabel={hot.optionBLabel}
+          index={i}
+          total={hotTakes.length}
+        />
+      ))}
+    </>
   );
 }

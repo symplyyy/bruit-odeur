@@ -17,6 +17,7 @@ type HotTakeData = {
   totalVotes: number;
   optionALabel: string | null;
   optionBLabel: string | null;
+  openCount: number;
 };
 
 type TopData = {
@@ -309,7 +310,19 @@ function HotTakeTile({
         </span>
 
         <div className="relative h-full p-5 md:p-7 flex flex-col justify-between">
-          <TileHeader kicker="Hot Take" red arrow />
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="chip chip-red">Hot Take</span>
+              {hotTake.openCount > 1 && (
+                <span className="chip chip-sm tabular-nums">
+                  {hotTake.openCount} ouverts
+                </span>
+              )}
+            </div>
+            <span className="w-9 h-9 flex items-center justify-center hairline bg-chalk/5 text-chalk text-lg leading-none group-hover:bg-brand-red group-hover:border-brand-red group-hover:text-white transition-colors">
+              →
+            </span>
+          </div>
 
           <div className="relative">
             <p className="font-display uppercase text-[22px] md:text-[32px] leading-[0.98] tracking-[-0.022em] text-chalk line-clamp-4">
@@ -328,7 +341,9 @@ function HotTakeTile({
               </span>
             </div>
             <p className="mt-3 eyebrow text-mist">
-              {hotTake.totalVotes} votes · tranche ton camp
+              {hotTake.openCount > 1
+                ? `${hotTake.openCount} hot takes à trancher`
+                : `${hotTake.totalVotes} votes · tranche ton camp`}
             </p>
           </div>
         </div>

@@ -1,6 +1,6 @@
 import { HomeHub } from "@/components/home/HomeHub";
 import {
-  getOpenHotTake,
+  getOpenHotTakes,
   getOpenTop,
   getWeeklyLeaderboard,
 } from "@/lib/queries";
@@ -8,11 +8,13 @@ import {
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const [hotTake, top, leaderboard] = await Promise.all([
-    getOpenHotTake(),
+  const [hotTakes, top, leaderboard] = await Promise.all([
+    getOpenHotTakes(),
     getOpenTop(),
     getWeeklyLeaderboard(),
   ]);
+
+  const hotTake = hotTakes[0] ?? null;
 
   return (
     <HomeHub
@@ -22,9 +24,13 @@ export default async function HomePage() {
               id: hotTake.id,
               statement: hotTake.statement,
               backgroundUrl: hotTake.backgroundUrl,
-              totalVotes: hotTake.fire + hotTake.froid,
+              totalVotes: hotTakes.reduce(
+                (sum, h) => sum + h.fire + h.froid,
+                0,
+              ),
               optionALabel: hotTake.optionALabel,
               optionBLabel: hotTake.optionBLabel,
+              openCount: hotTakes.length,
             }
           : null
       }

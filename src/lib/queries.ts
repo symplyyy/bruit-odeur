@@ -142,14 +142,18 @@ export type OpenTop = {
 };
 
 export async function getOpenHotTake(): Promise<OpenHotTake | null> {
+  const list = await getOpenHotTakes();
+  return list[0] ?? null;
+}
+
+export async function getOpenHotTakes(): Promise<OpenHotTake[]> {
   try {
-    const hot = await db.hotTake.findFirst({
+    const rows = await db.hotTake.findMany({
       where: { status: "OPEN" },
       orderBy: { publishAt: "desc" },
       include: { votes: true },
     });
-    if (!hot) return null;
-    return {
+    return rows.map((hot) => ({
       id: hot.id,
       statement: hot.statement,
       backgroundUrl: hot.backgroundUrl,
@@ -158,9 +162,9 @@ export async function getOpenHotTake(): Promise<OpenHotTake | null> {
       froid: hot.votes.filter((v) => v.side === "FROID").length,
       optionALabel: hot.optionALabel,
       optionBLabel: hot.optionBLabel,
-    };
+    }));
   } catch {
-    return null;
+    return [];
   }
 }
 

@@ -17,6 +17,8 @@ type Props = {
   initialFroid: number;
   optionALabel?: string | null;
   optionBLabel?: string | null;
+  index?: number;
+  total?: number;
 };
 
 export function HotTakeCard({
@@ -27,7 +29,10 @@ export function HotTakeCard({
   initialFroid,
   optionALabel,
   optionBLabel,
+  index,
+  total,
 }: Props) {
+  const isStacked = typeof total === "number" && total > 1;
   const isVersus = !!(optionALabel && optionBLabel);
   const labelA = optionALabel ?? "Chaud";
   const labelB = optionBLabel ?? "Froid";
@@ -77,16 +82,22 @@ export function HotTakeCard({
     }
   };
 
-  const total = fire + froid;
-  const firePct = total > 0 ? Math.round((fire / total) * 100) : 50;
+  const totalVotes = fire + froid;
+  const firePct = totalVotes > 0 ? Math.round((fire / totalVotes) * 100) : 50;
   const froidPct = 100 - firePct;
   const upper = statement.toUpperCase();
   const winner = voted ? (firePct >= 50 ? "FIRE" : "FROID") : null;
 
   return (
-    <section className="relative">
-      {/* ---------- Backdrop duotone rouge/bleu (pleine hauteur, passe derrière header & footer) ---------- */}
-      <div aria-hidden className="fixed inset-0 z-0 pointer-events-none">
+    <section className={cn("relative", isStacked && "overflow-hidden")}>
+      {/* ---------- Backdrop duotone rouge/bleu ---------- */}
+      <div
+        aria-hidden
+        className={cn(
+          "z-0 pointer-events-none",
+          isStacked ? "absolute inset-0" : "fixed inset-0",
+        )}
+      >
         <div
           className="absolute inset-0"
           style={{
@@ -106,15 +117,29 @@ export function HotTakeCard({
       </div>
 
       {/* ---------- Contenu ---------- */}
-      <div className="relative z-10 mx-auto max-w-3xl px-5 md:px-8 pt-6 md:pt-10 pb-6 flex flex-col min-h-[calc(100dvh-140px)]">
+      <div
+        className={cn(
+          "relative z-10 mx-auto max-w-3xl px-5 md:px-8 pt-6 md:pt-10 pb-6 flex flex-col",
+          isStacked
+            ? "min-h-[calc(100dvh-80px)]"
+            : "min-h-[calc(100dvh-140px)]",
+        )}
+      >
         {/* Header : badge + compteur de votes */}
-        <div className="relative flex items-center justify-between">
-          <Badge tone="red" size="lg">
-            {isVersus ? "Versus" : "Hot Take"}
-          </Badge>
-          {total > 0 && (
+        <div className="relative flex items-center justify-between gap-3 flex-wrap">
+          <div className="flex items-center gap-3">
+            <Badge tone="red" size="lg">
+              {isVersus ? "Versus" : "Hot Take"}
+            </Badge>
+            {isStacked && (
+              <span className="eyebrow text-mist tabular-nums">
+                {(index ?? 0) + 1} / {total}
+              </span>
+            )}
+          </div>
+          {totalVotes > 0 && (
             <span className="eyebrow text-mist tabular-nums">
-              {total} vote{total > 1 ? "s" : ""}
+              {totalVotes} vote{totalVotes > 1 ? "s" : ""}
             </span>
           )}
         </div>
@@ -243,7 +268,7 @@ export function HotTakeCard({
           )}
         </div>
 
-        {hydrated && !pseudo && (
+        {hydrated && !pseudo && (index ?? 0) === 0 && (
           <PseudoGate
             title="Ton pseudo"
             subtitle="Avant de voter, dis-nous qui tu es."
