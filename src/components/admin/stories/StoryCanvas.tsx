@@ -1026,14 +1026,46 @@ function renderInlineBold(text: string): React.ReactNode[] {
 }
 
 function splitAccent(title: string, accent: string) {
-  if (!accent.trim()) return [{ text: title, accent: false }];
-  const idx = title.toLowerCase().indexOf(accent.toLowerCase());
-  if (idx === -1) return [{ text: title, accent: false }];
-  return [
-    { text: title.slice(0, idx), accent: false },
-    { text: title.slice(idx, idx + accent.length), accent: true },
-    { text: title.slice(idx + accent.length), accent: false },
-  ];
+  const terms = accent
+    .split(";")
+    .map((t) => t.trim())
+    .filter(Boolean);
+  if (terms.length === 0) return [{ text: title, accent: false }];
+
+  const lower = title.toLowerCase();
+  const ranges: { start: number; end: number }[] = [];
+  for (const term of terms) {
+    const needle = term.toLowerCase();
+    let from = 0;
+    while (from <= lower.length) {
+      const idx = lower.indexOf(needle, from);
+      if (idx === -1) break;
+      const end = idx + needle.length;
+      const overlaps = ranges.some((r) => idx < r.end && end > r.start);
+      if (!overlaps) {
+        ranges.push({ start: idx, end });
+        break;
+      }
+      from = idx + 1;
+    }
+  }
+
+  if (ranges.length === 0) return [{ text: title, accent: false }];
+  ranges.sort((a, b) => a.start - b.start);
+
+  const parts: { text: string; accent: boolean }[] = [];
+  let cursor = 0;
+  for (const r of ranges) {
+    if (r.start > cursor) {
+      parts.push({ text: title.slice(cursor, r.start), accent: false });
+    }
+    parts.push({ text: title.slice(r.start, r.end), accent: true });
+    cursor = r.end;
+  }
+  if (cursor < title.length) {
+    parts.push({ text: title.slice(cursor), accent: false });
+  }
+  return parts;
 }
 
 function clamp(v: number, min: number, max: number) {

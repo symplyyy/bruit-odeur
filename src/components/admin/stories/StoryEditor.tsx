@@ -839,11 +839,14 @@ export function StoryEditor({ initial }: Props = {}) {
                   </div>
                 </div>
 
-                <MacField label="Mot mis en avant">
+                <MacField
+                  label="Mots mis en avant"
+                  hint="Sépare plusieurs mots par un ;"
+                >
                   <MacInput
                     value={payload.accent}
                     onChange={(e) => update("accent", e.target.value)}
-                    placeholder="Mot à surligner"
+                    placeholder="ex: rap ; drill"
                   />
                 </MacField>
                 <MacField label="Sous-titre">

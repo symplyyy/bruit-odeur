@@ -1,10 +1,13 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import { Countdown } from "@/components/ui/Countdown";
 import { usePseudoStore } from "@/lib/pseudo-store";
 import { cn } from "@/lib/utils";
+
+const COLLAPSED_LIMIT = 5;
 
 type Entry = {
   id: string;
@@ -23,6 +26,11 @@ type Props = {
 export function WeeklyLeaderboard({ endOfWeek, entries }: Props) {
   const pseudo = usePseudoStore((s) => s.pseudo);
   const reduced = useReducedMotion();
+  const [expanded, setExpanded] = useState(false);
+  const canCollapse = entries.length > COLLAPSED_LIMIT;
+  const visible =
+    canCollapse && !expanded ? entries.slice(0, COLLAPSED_LIMIT) : entries;
+  const hiddenCount = entries.length - COLLAPSED_LIMIT;
 
   return (
     <section className="relative mt-8 md:mt-12">
@@ -51,7 +59,7 @@ export function WeeklyLeaderboard({ endOfWeek, entries }: Props) {
         </div>
       ) : (
         <ol className="hairline divide-y divide-chalk/10 bg-chalk/[0.02]">
-          {entries.map((entry, idx) => {
+          {visible.map((entry, idx) => {
             const rank = idx + 1;
             const mine = pseudo === entry.name;
             return (
@@ -125,6 +133,33 @@ export function WeeklyLeaderboard({ endOfWeek, entries }: Props) {
             );
           })}
         </ol>
+      )}
+
+      {canCollapse && (
+        <div className="mt-4 flex justify-center">
+          <button
+            type="button"
+            onClick={() => setExpanded((v) => !v)}
+            className="group inline-flex items-center gap-2 h-10 px-4 hairline bg-chalk/5 text-chalk uppercase text-[11px] tracking-[0.22em] hover:bg-chalk/10 transition-colors"
+          >
+            {expanded ? (
+              <>Voir moins</>
+            ) : (
+              <>
+                Voir plus
+                <span className="text-dim tabular-nums">(+{hiddenCount})</span>
+              </>
+            )}
+            <span
+              className={cn(
+                "text-base leading-none text-brand-red transition-transform",
+                expanded && "rotate-180",
+              )}
+            >
+              ↓
+            </span>
+          </button>
+        </div>
       )}
     </section>
   );
