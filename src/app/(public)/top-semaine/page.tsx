@@ -5,6 +5,7 @@ import { Spotlight } from "@/components/ui/Spotlight";
 import { getOpenTop } from "@/lib/queries";
 
 export const metadata = { title: "Top de la semaine" };
+export const dynamic = "force-dynamic";
 
 export default async function TopSemainePage() {
   const top = await getOpenTop();

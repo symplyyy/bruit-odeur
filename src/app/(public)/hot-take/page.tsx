@@ -5,6 +5,7 @@ import { Spotlight } from "@/components/ui/Spotlight";
 import { getOpenHotTake } from "@/lib/queries";
 
 export const metadata = { title: "Hot Take" };
+export const dynamic = "force-dynamic";
 
 export default async function HotTakePage() {
   const hot = await getOpenHotTake();

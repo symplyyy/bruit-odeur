@@ -938,6 +938,17 @@ function SideStat({
   align: "left" | "right";
   tokens: PaletteTokens;
 }) {
+  const labelFontSize =
+    label.length <= 5
+      ? 88
+      : label.length <= 8
+        ? 68
+        : label.length <= 12
+          ? 52
+          : label.length <= 16
+            ? 40
+            : 32;
+  const pctFontSize = pct >= 100 ? 200 : 240;
   return (
     <div
       style={{
@@ -952,9 +963,18 @@ function SideStat({
           align === "left" ? `1px solid ${t.rule}` : undefined,
         alignItems: align === "right" ? "flex-end" : "flex-start",
         textAlign: align === "right" ? "right" : "left",
+        minWidth: 0,
+        overflow: "hidden",
       }}
     >
-      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: 6,
+          maxWidth: "100%",
+        }}
+      >
         <span
           style={{
             fontSize: 22,
@@ -968,18 +988,11 @@ function SideStat({
         <span
           style={{
             fontFamily: "var(--font-kabel), 'Archivo Black', sans-serif",
-            fontSize:
-              label.length <= 6
-                ? 96
-                : label.length <= 10
-                  ? 72
-                  : label.length <= 14
-                    ? 56
-                    : 44,
+            fontSize: labelFontSize,
             lineHeight: 1,
             letterSpacing: "-0.03em",
             color: color,
-            wordBreak: "break-word",
+            whiteSpace: "nowrap",
           }}
         >
           {label}
@@ -989,14 +1002,15 @@ function SideStat({
       <div
         style={{
           fontFamily: "var(--font-kabel), 'Archivo Black', sans-serif",
-          fontSize: 240,
+          fontSize: pctFontSize,
           lineHeight: 0.82,
           letterSpacing: "-0.04em",
           color: color,
+          whiteSpace: "nowrap",
         }}
       >
         {pct}
-        <span style={{ fontSize: 90, marginLeft: 6, verticalAlign: "baseline" }}>
+        <span style={{ fontSize: pctFontSize * 0.38, marginLeft: 6, verticalAlign: "baseline" }}>
           %
         </span>
       </div>

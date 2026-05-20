@@ -5,6 +5,8 @@ import {
   getWeeklyLeaderboard,
 } from "@/lib/queries";
 
+export const dynamic = "force-dynamic";
+
 export default async function HomePage() {
   const [hotTake, top, leaderboard] = await Promise.all([
     getOpenHotTake(),
